@@ -17,6 +17,14 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "angular-crud": [
+        "dist/angular-crud"
+      ],
+      "angular-crud/*": [
+        "dist/angular-crud/*"
+      ]
+    }
   }
 }

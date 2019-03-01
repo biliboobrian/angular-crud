@@ -18,6 +18,7 @@ export class Filters {
                     f.column = filter['column'];
                     f.type = filter['type'];
                     f.value = filter['value'];
+                    f.field = filter['field'];
                     this.members.push(f);
                 });
             }

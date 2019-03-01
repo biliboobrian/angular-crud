@@ -5,8 +5,6 @@ export class SearchCriteria {
 
     filters: Filters = new Filters();
     sort: SearchCriteriaSort = new SearchCriteriaSort();
-    sortColumn: string;
-    sortDirection = 'asc';
     perPage = 10;
     currentPage = 1;
 
@@ -19,7 +17,7 @@ export class SearchCriteria {
         });
     }
 
-    public setJson(val: Object) {
+    public setJson(val: object) {
         this.sort = new SearchCriteriaSort(val['sort']);
         this.perPage = val['perPage'];
         this.currentPage = val['currentPage'];
@@ -45,7 +43,11 @@ export class SearchCriteria {
             filters = this.filters;
         }
         const f = filters.members.find(member => {
-            return (optionLabel) ? (member.column === optionLabel && filters.relationName === name && member.type === type) : member.column === name;
+            if (optionLabel) {
+                return (member.column === optionLabel && filters.relationName === name && member.type === type);
+            } else {
+                return member.column === name;
+            }
         });
 
         if (f) {

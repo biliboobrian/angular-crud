@@ -201,7 +201,9 @@ export class BaseModel {
         for (const property in obj) {
             if (obj.hasOwnProperty(property)) {
                 if (this.datePropeties.includes(property)) {
-                    this['_' + property] = moment(obj[property]);
+                    if (obj[property]) {
+                        this['_' + property] = moment(obj[property], 'YYYY-MM-DD hh:mm:ss');
+                    }
                 } else if (this.boolPropeties.includes(property)) {
                     if (obj[property] && obj[property] === 1) {
                         this['_' + property] = true;

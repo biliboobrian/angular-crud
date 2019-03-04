@@ -1,7 +1,7 @@
 {
   "name": "@biliboobrian/angular-crud",
   "author": "Pierre Hanauer <pierre.hanauer@its4u.lu>",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Angular Crud services and models for Angular using PHP",
   "repository": {
     "type": "git",

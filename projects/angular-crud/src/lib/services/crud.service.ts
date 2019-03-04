@@ -550,4 +550,9 @@ export class CrudService {
 
     this.crudTransaction = false;
   }
+
+  public clearCache() {
+    this.crudCache = {};
+  }
+
 }

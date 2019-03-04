@@ -488,6 +488,7 @@ export class CrudService {
       }
 
       if (crudOperations.length > 0) {
+
         return this.http.post(this.crudModelService.apiUrl + 'bulk', JSON.stringify(crudOperations), options)
           .pipe(
             map(data => {
@@ -538,12 +539,19 @@ export class CrudService {
             )
           );
       } else {
+
         return new Observable((subscriber) => {
           const returnData: Array<CrudResponse> = new Array<CrudResponse>();
+
           for (let i = 0; i < this.crudOperations.length; i++) {
             const crudOperation: CrudOperation = this.crudOperations[i];
             returnData.push(this.crudCache[crudOperation.table]);
           }
+
+          this.crudOperations = new Array<CrudOperation>();
+          this.crudTransaction = false;
+          subscriber.next(returnData);
+          subscriber.complete();
         });
       }
     }

@@ -463,7 +463,12 @@ export class CrudService {
   }
 
   public endTransaction(toastMessage: string = 'Opération réussie.'): Observable<Array<CrudResponse>> {
+
     if (this.crudOperations.length > 0) {
+      const currentCrudOp = this.cloneOperations();
+      this.crudOperations = new Array<CrudOperation>();
+      this.crudTransaction = false;
+
       const headers = new HttpHeaders({
         'Content-Type': 'application/json'
       });
@@ -474,16 +479,16 @@ export class CrudService {
 
       const crudOperations: Array<CrudOperation> = [];
 
-      for (let i = 0; i < this.crudOperations.length; i++) {
-        if (this.crudOperations[i].table && this.crudModelService.cacheTable.indexOf(this.crudOperations[i].table) !== -1
-          && this.crudOperations[i].type !== 'GET') {
-          this.crudCache[this.crudOperations[i].table] = null;
+      for (let i = 0; i < currentCrudOp.length; i++) {
+        if (currentCrudOp[i].table && this.crudModelService.cacheTable.indexOf(currentCrudOp[i].table) !== -1
+          && currentCrudOp[i].type !== 'GET') {
+          this.crudCache[currentCrudOp[i].table] = null;
         }
 
 
-        if ((this.crudOperations[i].table && this.crudModelService.cacheTable.indexOf(this.crudOperations[i].table) === -1)
-          || !this.crudCache[this.crudOperations[i].table]) {
-          crudOperations.push(this.crudOperations[i]);
+        if ((currentCrudOp[i].table && this.crudModelService.cacheTable.indexOf(currentCrudOp[i].table) === -1)
+          || !this.crudCache[currentCrudOp[i].table]) {
+          crudOperations.push(currentCrudOp[i]);
         }
       }
 
@@ -491,45 +496,7 @@ export class CrudService {
 
         return this.http.post(this.crudModelService.apiUrl + 'bulk', JSON.stringify(crudOperations), options)
           .pipe(
-            map(data => {
-              const returnData: Array<CrudResponse> = new Array<CrudResponse>();
-              let toastPrinted = false;
-              let currentOperation = 0;
-
-              for (let i = 0; i < this.crudOperations.length; i++) {
-
-                const crudOperation: CrudOperation = this.crudOperations[i];
-                if (crudOperation.type === 'GET') {
-                  if (crudOperation.table && this.crudModelService.cacheTable.indexOf(crudOperation.table) !== -1) {
-                    if (!this.crudCache[crudOperation.table]) {
-                      this.crudCache[crudOperation.table] = new CrudResponse(data[currentOperation], this);
-                      currentOperation++;
-                    }
-                    returnData.push(this.crudCache[crudOperation.table]);
-                  } else {
-                    if (data[currentOperation]['pagination']) {
-                      returnData.push(new PaginatedCrudResponse(data[currentOperation], this));
-                    } else {
-                      returnData.push(new CrudResponse(data[currentOperation], this));
-                    }
-
-                    currentOperation++;
-                  }
-                } else {
-                  toastPrinted = true;
-                  returnData.push(new CrudResponse(data[currentOperation], this));
-                  currentOperation++;
-                }
-              }
-              this.crudOperations = new Array<CrudOperation>();
-              this.crudTransaction = false;
-
-              if (toastPrinted && toastMessage) {
-                this.snotifyService.success(toastMessage);
-              }
-
-              return returnData;
-            }),
+            map(data => this.parseData(data, currentCrudOp, toastMessage)),
             catchError(
               (e: HttpErrorResponse) => {
                 this.crudOperations = new Array<CrudOperation>();
@@ -543,24 +510,69 @@ export class CrudService {
         return new Observable((subscriber) => {
           const returnData: Array<CrudResponse> = new Array<CrudResponse>();
 
-          for (let i = 0; i < this.crudOperations.length; i++) {
-            const crudOperation: CrudOperation = this.crudOperations[i];
+          for (let i = 0; i < currentCrudOp.length; i++) {
+            const crudOperation: CrudOperation = currentCrudOp[i];
             returnData.push(this.crudCache[crudOperation.table]);
           }
 
-          this.crudOperations = new Array<CrudOperation>();
-          this.crudTransaction = false;
           subscriber.next(returnData);
           subscriber.complete();
         });
       }
     }
-
-    this.crudTransaction = false;
   }
 
   public clearCache() {
     this.crudCache = {};
+  }
+
+  private parseData(data: any, crudOp: Array<CrudOperation>, toastMessage: string): Array<CrudResponse> {
+    const returnData: Array<CrudResponse> = new Array<CrudResponse>();
+    let toastPrinted = false;
+    let currentOperation = 0;
+
+    for (let i = 0; i < crudOp.length; i++) {
+
+      const crudOperation: CrudOperation = crudOp[i];
+      if (crudOperation.type === 'GET') {
+        if (crudOperation.table && this.crudModelService.cacheTable.indexOf(crudOperation.table) !== -1) {
+          if (!this.crudCache[crudOperation.table]) {
+            this.crudCache[crudOperation.table] = new CrudResponse(data[currentOperation], this);
+            currentOperation++;
+          }
+          returnData.push(this.crudCache[crudOperation.table]);
+        } else {
+          if (data[currentOperation]['pagination']) {
+            returnData.push(new PaginatedCrudResponse(data[currentOperation], this));
+          } else {
+            returnData.push(new CrudResponse(data[currentOperation], this));
+          }
+
+          currentOperation++;
+        }
+      } else {
+        toastPrinted = true;
+        returnData.push(new CrudResponse(data[currentOperation], this));
+        currentOperation++;
+      }
+    }
+    this.crudOperations = new Array<CrudOperation>();
+    this.crudTransaction = false;
+
+    if (toastPrinted && toastMessage) {
+      this.snotifyService.success(toastMessage);
+    }
+
+    return returnData;
+  }
+
+  private cloneOperations() {
+    const ret = new Array<CrudOperation>();
+    this.crudOperations.forEach(crudOperation => {
+      ret.push(crudOperation);
+    });
+
+    return ret;
   }
 
 }

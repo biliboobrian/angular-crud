@@ -4,19 +4,19 @@ export class Relation {
     table: string;
     sortColumn: string;
     sortDirection: string;
-    filter: Filter;
+    filters: Array<Filter>;
     relations: Array<Relation>;
 
     constructor(table: string,
                 relations?: Array<Relation>,
                 sortColumn: string = null,
                 sortDirection: string = null,
-                filter: Filter = null) {
+                filters: Array<Filter> = null) {
         this.table = table;
         this.relations = relations;
         this.sortColumn = sortColumn;
         this.sortDirection = sortDirection;
-        this.filter = filter;
+        this.filters = filters;
     }
 
     getUrlString(): string {
@@ -28,6 +28,12 @@ export class Relation {
                 relArray.push(relation.getUrlString());
             });
             str += relArray.join(',');
+        }
+
+        str += '],"filters":[';
+
+        if (this.filters) {
+            str += '"' + this.filters.join('","') + '"';
         }
 
         str += ']';

@@ -270,7 +270,7 @@ export class CrudService {
       return this.http.post(this.crudModelService.apiUrl + url, obj.exportData(), options)
         .pipe(
           map(data => {
-            this.snotifyService.success('Relation ' + obj[obj.primaryKey] + ' ajouté avec succès.');
+            this.snotifyService.success('Relation ' + obj[obj.primaryKey] + ' ajoutée avec succès.');
             return new CrudResponse(data, this);
           }),
           catchError(
@@ -302,7 +302,7 @@ export class CrudService {
       return this.http.post(this.crudModelService.apiUrl + url, [], options)
         .pipe(
           map(data => {
-            this.snotifyService.success('Relation ajouté avec succès.');
+            this.snotifyService.success('Relation ajoutée avec succès.');
             return new CrudResponse(data, this);
           }),
           catchError(
@@ -335,7 +335,7 @@ export class CrudService {
       return this.http.post(this.crudModelService.apiUrl + url, obj.exportData(), options)
         .pipe(
           map(data => {
-            this.snotifyService.success(tbl + ' ' + obj[obj.primaryKey] + ' ajouté avec succès.');
+            this.snotifyService.success(tbl + ' ' + obj[obj.primaryKey] + ' ajouté(e) avec succès.');
             this.crudCache[tbl] = null;
             return new CrudResponse(data, this);
           }),
@@ -397,7 +397,7 @@ export class CrudService {
       return this.http.delete(this.crudModelService.apiUrl + url)
         .pipe(
           map(data => {
-            this.snotifyService.success(tbl + ' ' + obj[obj.primaryKey] + ' supprimé avec succès.');
+            this.snotifyService.success(tbl + ' ' + obj[obj.primaryKey] + ' supprimé(e) avec succès.');
             this.crudCache[tbl] = null;
             return new CrudResponse(data, this);
           }),
@@ -524,6 +524,10 @@ export class CrudService {
 
   public clearCache() {
     this.crudCache = {};
+  }
+
+  public getKey(operation: number, field: string) {
+      return '{"id":"' + operation.toString() + '","field":"' + field + '"}';
   }
 
   private parseData(data: any, crudOp: Array<CrudOperation>, toastMessage: string): Array<CrudResponse> {

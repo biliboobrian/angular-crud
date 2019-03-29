@@ -1,9 +1,10 @@
-import { FormGroup } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { SearchCriteria } from './search-criteria';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CrudService } from '../services/crud.service';
 import { PaginatedCrudResponse } from './paginated-crud-response';
+import { CrudColumn } from './crud-column';
 import * as moment_ from 'moment'; const moment = moment_;
 
 export class BaseModel {
@@ -15,12 +16,13 @@ export class BaseModel {
     deletedRelation = false; // when model is deleted from a relation
     table = '';
 
-    protected exportProperties: Array<string> = [];
+    protected exportProperties: Array<CrudColumn> = [];
     protected datePropeties: Array<string> = [];
     protected boolPropeties: Array<string> = [];
     protected relations: Array<string> = [];
 
     private crudService: CrudService;
+    private fb: FormBuilder;
 
     get(searchCriteria?: SearchCriteria): Observable<PaginatedCrudResponse> {
         return this.crudService.get(searchCriteria, this.table);
@@ -47,11 +49,98 @@ export class BaseModel {
         }
     }
 
+    getReactiveForm(): FormGroup {
+        const group = {};
+
+        this.exportProperties.forEach(crudColumn => {
+            group[crudColumn.name] = ['', this.getValidatorsFrom(crudColumn)];
+        });
+
+        return this.fb.group(group);
+    }
+
+    getValidatorsFrom(column: CrudColumn) {
+        const vals: Array<Validators> = [];
+
+        switch (column.type) {
+            case CrudColumn.NUMBER:
+                vals.push(Validators.pattern('^[0-9]+$'));
+                break;
+        }
+
+        if (!column.nullable) {
+            vals.push(Validators.required);
+        }
+
+        if (column.maxLength > 0) {
+            vals.push(Validators.maxLength(column.maxLength));
+        }
+
+
+        return vals;
+    }
+
+    clone() {
+        const obj = new (this.constructor as any)(this.exportData(), this.crudService);
+
+        this.relations.forEach(relation => {
+            if (this[relation]) {
+                if (Array.isArray(this[relation])) {
+                    obj[relation] = new Array<object>();
+
+                    this[relation].forEach((element: BaseModel) => {
+                        obj[relation].push(element.clone());
+                    });
+                } else {
+                    obj[relation] = this[relation].clone();
+                }
+            }
+        });
+
+        return obj;
+    }
+
+    duplicateAsNew(withRelationsAsNew: boolean = false) {
+        const obj = new (this.constructor as any)(this.exportData(), this.crudService);
+        obj.fetched = false;
+        obj.sync = false;
+        obj[this.primaryKey] = null;
+
+        this.relations.forEach(relation => {
+            if (this[relation]) {
+                if (Array.isArray(this[relation])) {
+                    obj[relation] = new Array<object>();
+
+                    this[relation].forEach((element: BaseModel) => {
+                        const elemRel = element.clone();
+                        if (withRelationsAsNew) {
+                            elemRel.fetched = false;
+                            elemRel.sync = false;
+                            elemRel[elemRel.primaryKey] = null;
+                        }
+
+                        obj[relation].push(elemRel);
+                    });
+                } else {
+                    const rel = this[relation].clone();
+                    if (withRelationsAsNew) {
+                        rel.fetched = false;
+                        rel.sync = false;
+                        rel[rel.primaryKey] = null;
+                    }
+                    obj[relation] = rel;
+                }
+            }
+        });
+
+        return obj;
+    }
+
     getPatchValue(): object {
         const res = {};
 
-        this.exportProperties.forEach(prop => {
-            res[prop] = this[prop];
+        this.exportProperties.forEach(crudColumn => {
+            res[crudColumn.name] = this[crudColumn.name];
         });
 
         return res;
@@ -217,16 +306,35 @@ export class BaseModel {
         }
     }
 
-
-    exportData(): object {
+    exportData(withRelations?: object): object {
         const obj: object = {};
-        for (const property in this) {
-            if (this.exportProperties.includes(property)) {
-                if (this.datePropeties.includes(property) && this.hasOwnProperty('_' + property) && this['_' + property]) {
-                    obj[property.toString()] = this['_' + property]['valueOf']();
-                } else {
-                    obj[property.toString()] = this['_' + property];
+        this.exportProperties.forEach(crudColumn => {
+            if (this.datePropeties.includes(crudColumn.name)
+                && this.hasOwnProperty('_' + crudColumn.name)
+                && this['_' + crudColumn.name]) {
+                obj[crudColumn.name] = this['_' + crudColumn.name]['valueOf']();
+            } else {
+                obj[crudColumn.name] = this['_' + crudColumn.name];
 
+            }
+        });
+
+        if (withRelations) {
+            for (const key in withRelations) {
+                if (withRelations.hasOwnProperty(key)) {
+                    const relation = withRelations[key];
+
+                    if (this[key]) {
+                        if (Array.isArray(this[key])) {
+                            obj[key] = new Array<object>();
+
+                            this[key].forEach((element: BaseModel) => {
+                                obj[key].push(element.exportData(relation));
+                            });
+                        } else {
+                            obj[key] = this[key].exportData(relation);
+                        }
+                    }
                 }
             }
         }

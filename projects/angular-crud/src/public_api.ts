@@ -7,6 +7,7 @@ export * from './lib/models/base-model';
 export * from './lib/models/crud-config';
 export * from './lib/models/crud-operation';
 export * from './lib/models/crud-response';
+export * from './lib/models/crud-column';
 export * from './lib/models/filter';
 export * from './lib/models/filters';
 export * from './lib/models/paginated-crud-response';

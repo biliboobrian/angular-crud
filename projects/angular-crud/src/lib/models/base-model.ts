@@ -258,9 +258,15 @@ export class BaseModel {
     }
 
     deleteRelation(obj: BaseModel, relation: string) {
-        if (this[relation]) {
+        if (this[relation] && this[relation].indexOf(obj) !== -1) {
             obj.deletedRelation = true;
-            this[relation].push(obj);
+            this[relation].splice( this[relation].indexOf(obj), 1 );
+        }
+    }
+
+    emptyRelation(relation: string) {
+        if (this[relation] && this[relation].length > 0) {
+            this.crudService.emptyRelation(this, relation);
         }
     }
 

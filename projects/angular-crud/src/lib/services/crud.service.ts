@@ -416,6 +416,38 @@ export class CrudService {
 
   }
 
+  public emptyRelation(obj: BaseModel, relation: string): Observable<CrudResponse> {
+    const url: string = obj.table + '/' + obj[obj.primaryKey] + '/' + relation;
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    const options = {
+      headers
+    };
+
+    if (!this.crudTransaction) {
+      return this.http.delete(this.crudModelService.apiUrl + url, options)
+        .pipe(
+          map(data => {
+            this.snotifyService.success('Relations supprimées avec succès.');
+            return new CrudResponse(data, this);
+          }),
+          catchError(
+            (e: HttpErrorResponse) => {
+              this.crudOperations = new Array<CrudOperation>();
+              this.crudTransaction = false;
+              return throwError(e);
+            }
+          )
+        );
+    } else {
+      this.addOperation(new CrudOperation('DELETE', '/' + url, null));
+      return null;
+    }
+  }
+
   public deleteRelation(obj: BaseModel, relationPath: Array<string>, relationTable: string = obj.table): Observable<CrudResponse> {
     const url: string = relationPath.join('/') + '/' + relationTable + '/' + obj[obj.primaryKey];
 
@@ -527,7 +559,7 @@ export class CrudService {
   }
 
   public getKey(operation: number, field: string) {
-      return '{"id":"' + operation.toString() + '","field":"' + field + '"}';
+    return '{"id":"' + operation.toString() + '","field":"' + field + '"}';
   }
 
   private parseData(data: any, crudOp: Array<CrudOperation>, toastMessage: string): Array<CrudResponse> {

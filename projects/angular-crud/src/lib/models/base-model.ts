@@ -84,15 +84,15 @@ export class BaseModel {
         const obj = new (this.constructor as any)(this.exportData(), this.crudService);
 
         this.relations.forEach(relation => {
-            if (this[relation]) {
-                if (Array.isArray(this[relation])) {
-                    obj[relation] = new Array<object>();
+            if (this['_' + relation]) {
+                if (Array.isArray(this['_' + relation])) {
+                    obj['_' + relation] = new Array<object>();
 
-                    this[relation].forEach((element: BaseModel) => {
-                        obj[relation].push(element.clone());
+                    this['_' + relation].forEach((element: BaseModel) => {
+                        obj['_' + relation].push(element.clone());
                     });
                 } else {
-                    obj[relation] = this[relation].clone();
+                    obj['_' + relation] = this['_' + relation].clone();
                 }
             }
         });
@@ -107,11 +107,11 @@ export class BaseModel {
         obj[this.primaryKey] = null;
 
         this.relations.forEach(relation => {
-            if (this[relation]) {
-                if (Array.isArray(this[relation])) {
-                    obj[relation] = new Array<object>();
+            if (this['_' + relation]) {
+                if (Array.isArray(this['_' + relation])) {
+                    obj['_' + relation] = new Array<object>();
 
-                    this[relation].forEach((element: BaseModel) => {
+                    this['_' + relation].forEach((element: BaseModel) => {
                         const elemRel = element.clone();
                         if (withRelationsAsNew) {
                             elemRel.fetched = false;
@@ -119,16 +119,16 @@ export class BaseModel {
                             elemRel[elemRel.primaryKey] = null;
                         }
 
-                        obj[relation].push(elemRel);
+                        obj['_' + relation].push(elemRel);
                     });
                 } else {
-                    const rel = this[relation].clone();
+                    const rel = this['_' + relation].clone();
                     if (withRelationsAsNew) {
                         rel.fetched = false;
                         rel.sync = false;
                         rel[rel.primaryKey] = null;
                     }
-                    obj[relation] = rel;
+                    obj['_' + relation] = rel;
                 }
             }
         });
@@ -182,13 +182,13 @@ export class BaseModel {
                 }
 
                 this.relations.forEach(relation => {
-                    if (this[relation]) {
-                        if (Array.isArray(this[relation])) {
-                            this[relation].forEach((element: BaseModel) => {
+                    if (this['_' + relation]) {
+                        if (Array.isArray(this['_' + relation])) {
+                            this['_' + relation].forEach((element: BaseModel) => {
                                 element.save(this.getRelPath(relationPath, op, primaryKey));
                             });
                         } else {
-                            this[relation].save(this.getRelPath(relationPath, op, primaryKey), relation);
+                            this['_' + relation].save(this.getRelPath(relationPath, op, primaryKey), relation);
                         }
                     }
 
@@ -216,13 +216,13 @@ export class BaseModel {
                     }
                 }
                 this.relations.forEach(relation => {
-                    if (this[relation]) {
-                        if (Array.isArray(this[relation])) {
-                            this[relation].forEach((element: BaseModel) => {
+                    if (this['_' + relation]) {
+                        if (Array.isArray(this['_' + relation])) {
+                            this['_' + relation].forEach((element: BaseModel) => {
                                 element.save(this.getRelPath(relationPath, op, primaryKey));
                             });
                         } else {
-                            this[relation].save(this.getRelPath(relationPath, op, primaryKey), relation);
+                            this['_' + relation].save(this.getRelPath(relationPath, op, primaryKey), relation);
                         }
                     }
                 });
@@ -251,22 +251,25 @@ export class BaseModel {
     }
 
     addRelation(obj: BaseModel, relation: string) {
-        if (this[relation]) {
+        if (this['_' + relation]) {
             obj.addedRelation = true;
-            this[relation].push(obj);
+            this['_' + relation].push(obj);
         }
     }
 
     deleteRelation(obj: BaseModel, relation: string) {
-        if (this[relation] && this[relation].indexOf(obj) !== -1) {
-            obj.deletedRelation = true;
-            this[relation].splice( this[relation].indexOf(obj), 1 );
+        if (this['_' + relation]) {
+            const relObj = this['_' + relation].find(elem => {
+                return elem[obj.primaryKey] === obj[obj.primaryKey];
+            });
+            relObj.deletedRelation = true;
         }
     }
 
     emptyRelation(relation: string) {
-        if (this[relation] && this[relation].length > 0) {
+        if (this['_' + relation] && this['_' + relation].length > 0) {
             this.crudService.emptyRelation(this, relation);
+            this['_' + relation] = [];
         }
     }
 

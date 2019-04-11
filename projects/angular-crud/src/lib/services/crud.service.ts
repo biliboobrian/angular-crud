@@ -42,7 +42,8 @@ export class CrudService {
     searchCriteria?: SearchCriteria,
     table?: string,
     relations?: Array<Relation>,
-    debounce: boolean = false
+    debounce: number = 0,
+    clearCache: boolean = false
   ): Observable<PaginatedCrudResponse> {
 
     const tbl: string = (table) ? table : this.crudTable;
@@ -71,12 +72,17 @@ export class CrudService {
     }
 
     if (!this.crudTransaction) {
-      if (debounce) {
+      if (debounce > 0) {
         if (this.crudModelService.cacheTable.indexOf(tbl) !== -1) {
-          if (!this.crudCache[tbl]) {
-            this.crudCache[tbl] = this.http.get<PaginatedCrudResponse>(this.crudModelService.apiUrl + url)
+          if (this.crudCache[tbl] && !clearCache) {
+            return new Observable((subscriber) => {
+              subscriber.next(this.crudCache[tbl]);
+              subscriber.complete();
+            });
+          } else {
+            return this.http.get<PaginatedCrudResponse>(this.crudModelService.apiUrl + url)
               .pipe(
-                debounceTime(300),
+                debounceTime(debounce),
                 map(data => {
                   this.crudCache[tbl] = new PaginatedCrudResponse(data, this);
                   return this.crudCache[tbl];
@@ -89,17 +95,12 @@ export class CrudService {
                   }
                 )
               );
-          } else {
-            return new Observable((subscriber) => {
-              subscriber.next(this.crudCache[tbl]);
-              subscriber.complete();
-            });
+
           }
-          return this.crudCache[tbl];
         } else {
           return this.http.get<PaginatedCrudResponse>(this.crudModelService.apiUrl + url)
             .pipe(
-              debounceTime(300),
+              debounceTime(debounce),
               map(data => new PaginatedCrudResponse(data, this),
                 catchError(
                   (e: HttpErrorResponse) => {
@@ -113,7 +114,12 @@ export class CrudService {
 
       } else {
         if (this.crudModelService.cacheTable.indexOf(tbl) !== -1) {
-          if (!this.crudCache[tbl]) {
+          if (this.crudCache[tbl] && !clearCache) {
+            return new Observable((subscriber) => {
+              subscriber.next(this.crudCache[tbl]);
+              subscriber.complete();
+            });
+          } else {
             return this.http.get<PaginatedCrudResponse>(this.crudModelService.apiUrl + url)
               .pipe(
                 map(data => {
@@ -128,11 +134,6 @@ export class CrudService {
                   }
                 )
               );
-          } else {
-            return new Observable((subscriber) => {
-              subscriber.next(this.crudCache[tbl]);
-              subscriber.complete();
-            });
           }
         } else {
           return this.http.get<PaginatedCrudResponse>(this.crudModelService.apiUrl + url)
@@ -178,17 +179,39 @@ export class CrudService {
     }
   }
 
-  public index(table?: string): Observable<CrudResponse> {
+  public index(table?: string, clearCache: boolean = false): Observable<CrudResponse> {
     const tbl: string = (table) ? table : this.crudTable;
     const url: string = tbl + '/index';
 
     if (!this.crudTransaction) {
-      if (!this.crudCache[tbl]) {
+      if (this.crudModelService.cacheTable.indexOf(tbl) !== -1) {
+        if (this.crudCache[tbl] && !clearCache) {
+          return new Observable((subscriber) => {
+            subscriber.next(this.crudCache[tbl]);
+            subscriber.complete();
+          });
+        } else {
+
+          return this.http.get<CrudResponse>(this.crudModelService.apiUrl + url)
+            .pipe(
+              map(data => {
+                this.crudCache[tbl] = new CrudResponse(data, this);
+                return this.crudCache[tbl];
+              }),
+              catchError(
+                (e: HttpErrorResponse) => {
+                  this.crudOperations = new Array<CrudOperation>();
+                  this.crudTransaction = false;
+                  return throwError(e);
+                }
+              )
+            );
+        }
+      } else {
         return this.http.get<CrudResponse>(this.crudModelService.apiUrl + url)
           .pipe(
             map(data => {
-              this.crudCache[tbl] = new CrudResponse(data, this);
-              return this.crudCache[tbl];
+              return new CrudResponse(data, this);
             }),
             catchError(
               (e: HttpErrorResponse) => {
@@ -198,11 +221,6 @@ export class CrudService {
               }
             )
           );
-      } else {
-        return new Observable((subscriber) => {
-          subscriber.next(this.crudCache[tbl]);
-          subscriber.complete();
-        });
       }
     } else {
       this.addOperation(new CrudOperation('GET', '/' + url, null, tbl));

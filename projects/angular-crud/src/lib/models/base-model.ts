@@ -185,10 +185,10 @@ export class BaseModel {
                     if (this['_' + relation]) {
                         if (Array.isArray(this['_' + relation])) {
                             this['_' + relation].forEach((element: BaseModel) => {
-                                element.save(this.getRelPath(relationPath, op, primaryKey));
+                                element.save(this.getRelPath(null, op, primaryKey));
                             });
                         } else {
-                            this['_' + relation].save(this.getRelPath(relationPath, op, primaryKey), relation);
+                            this['_' + relation].save(this.getRelPath(null, op, primaryKey), relation);
                         }
                     }
 
@@ -219,10 +219,10 @@ export class BaseModel {
                     if (this['_' + relation]) {
                         if (Array.isArray(this['_' + relation])) {
                             this['_' + relation].forEach((element: BaseModel) => {
-                                element.save(this.getRelPath(relationPath, op, primaryKey));
+                                element.save(this.getRelPath(null, op, primaryKey));
                             });
                         } else {
-                            this['_' + relation].save(this.getRelPath(relationPath, op, primaryKey), relation);
+                            this['_' + relation].save(this.getRelPath(null, op, primaryKey), relation);
                         }
                     }
                 });

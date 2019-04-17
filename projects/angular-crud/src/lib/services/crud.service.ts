@@ -150,7 +150,7 @@ export class CrudService {
         }
       }
     } else {
-      this.addOperation(new CrudOperation('GET', '/' + url, null, tbl));
+      this.addOperation(new CrudOperation('GET', '/' + url, null, tbl, clearCache));
       return null;
     }
   }
@@ -223,7 +223,7 @@ export class CrudService {
           );
       }
     } else {
-      this.addOperation(new CrudOperation('GET', '/' + url, null, tbl));
+      this.addOperation(new CrudOperation('GET', '/' + url, null, tbl, clearCache));
       return null;
     }
   }
@@ -530,8 +530,12 @@ export class CrudService {
       const crudOperations: Array<CrudOperation> = [];
 
       for (let i = 0; i < currentCrudOp.length; i++) {
-        if (currentCrudOp[i].table && this.crudModelService.cacheTable.indexOf(currentCrudOp[i].table) !== -1
-          && currentCrudOp[i].type !== 'GET') {
+        if (currentCrudOp[i].table
+          && (
+            (this.crudModelService.cacheTable.indexOf(currentCrudOp[i].table) !== -1
+              && currentCrudOp[i].type !== 'GET')
+            || currentCrudOp[i].clearCache)
+        ) {
           this.crudCache[currentCrudOp[i].table] = null;
         }
 

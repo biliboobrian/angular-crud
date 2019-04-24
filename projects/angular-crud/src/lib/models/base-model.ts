@@ -157,7 +157,7 @@ export class BaseModel {
         }
     }
 
-    save(relationPath?: Array<string>, relatedTable?: string): Observable<boolean> {
+    save(relationPath?: Array<string>, relatedTable?: string, toastMessage?: string): Observable<boolean> {
 
         const op: number = this.crudService.operationCount();
         const primaryKey: string = this.primaryKey;
@@ -197,7 +197,7 @@ export class BaseModel {
                 return null;
             } else {
                 if (!this.sync) {
-                    return this.crudService.put(this, this.table).pipe(
+                    return this.crudService.put(this, this.table, toastMessage).pipe(
                         map(crudResponse => {
                             this.importData(crudResponse.data);
                             return true;
@@ -238,7 +238,7 @@ export class BaseModel {
                             })
                         );
                     } else {
-                        return this.crudService.post(this, this.table).pipe(
+                        return this.crudService.post(this, this.table, toastMessage).pipe(
                             map(crudResponse => {
                                 this.importData(crudResponse.data);
                                 return true;
@@ -273,12 +273,12 @@ export class BaseModel {
         }
     }
 
-    remove(): Observable<boolean> {
+    remove(toastMessage?: string): Observable<boolean> {
         if (this.crudService.transactionStarted()) {
             this.crudService.delete(this, this.table);
             return null;
         } else {
-            return this.crudService.delete(this, this.table).pipe(
+            return this.crudService.delete(this, this.table, toastMessage).pipe(
                 map(crudResponse => {
                     this.importData(crudResponse.data);
                     return true;

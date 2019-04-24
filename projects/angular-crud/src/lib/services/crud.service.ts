@@ -337,7 +337,7 @@ export class CrudService {
     }
   }
 
-  public post(obj: BaseModel, table?: string): Observable<CrudResponse> {
+  public post(obj: BaseModel, table?: string, toastMessage?: string): Observable<CrudResponse> {
     const tbl: string = (table) ? table : this.crudTable;
     const url: string = tbl;
 
@@ -353,7 +353,11 @@ export class CrudService {
       return this.http.post(this.crudModelService.apiUrl + url, obj.exportData(), options)
         .pipe(
           map(data => {
-            this.snotifyService.success(tbl + ' ' + obj[obj.primaryKey] + ' ajouté(e) avec succès.');
+            if (toastMessage) {
+              this.snotifyService.success(toastMessage);
+            } else {
+              this.snotifyService.success(tbl + ' ' + obj[obj.primaryKey] + ' ajouté(e) avec succès.');
+            }
             this.crudCache[tbl] = null;
             return new CrudResponse(data, this);
           }),
@@ -372,7 +376,7 @@ export class CrudService {
 
   }
 
-  public put(obj: BaseModel, table?: string): Observable<CrudResponse> {
+  public put(obj: BaseModel, table?: string, toastMessage?: string): Observable<CrudResponse> {
     const tbl: string = (table) ? table : this.crudTable;
     const url: string = tbl + '/' + obj[obj.primaryKey];
 
@@ -388,7 +392,11 @@ export class CrudService {
       return this.http.put(this.crudModelService.apiUrl + url, obj.exportData(), options)
         .pipe(
           map(data => {
-            this.snotifyService.success(tbl + ' ' + obj[obj.primaryKey] + ' mis à jour avec succès.');
+            if (toastMessage) {
+              this.snotifyService.success(toastMessage);
+            } else {
+              this.snotifyService.success(tbl + ' ' + obj[obj.primaryKey] + ' mis à jour avec succès.');
+            }
             this.crudCache[tbl] = null;
             return new CrudResponse(data, this);
           }),
@@ -407,7 +415,7 @@ export class CrudService {
 
   }
 
-  public delete(obj: BaseModel, table?: string): Observable<CrudResponse> {
+  public delete(obj: BaseModel, table?: string, toastMessage?: string): Observable<CrudResponse> {
     const tbl: string = (table) ? table : this.crudTable;
     const url: string = tbl + '/' + obj[obj.primaryKey];
 
@@ -415,7 +423,11 @@ export class CrudService {
       return this.http.delete(this.crudModelService.apiUrl + url)
         .pipe(
           map(data => {
-            this.snotifyService.success(tbl + ' ' + obj[obj.primaryKey] + ' supprimé(e) avec succès.');
+            if (toastMessage) {
+              this.snotifyService.success(toastMessage);
+            } else {
+              this.snotifyService.success(tbl + ' ' + obj[obj.primaryKey] + ' supprimé(e) avec succès.');
+            }
             this.crudCache[tbl] = null;
             return new CrudResponse(data, this);
           }),

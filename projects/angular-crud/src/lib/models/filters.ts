@@ -16,9 +16,10 @@ export class Filters {
                 filters['members'].forEach(filter => {
                     const f: Filter = new Filter();
                     f.column = filter['column'];
-                    f.type = filter['type'];
+                    f.operation = filter['operation'];
                     f.value = filter['value'];
                     f.field = filter['field'];
+                    f.type = filter['type'];
                     this.members.push(f);
                 });
             }

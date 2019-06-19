@@ -8,7 +8,7 @@ export class Declaration extends BaseModel {
     private _id: number;
     private _id_attendee: number;
     private _engagement: string;
-    private _advance: number;
+    private _advance: boolean;
     private _piece: number;
     private _reference: string;
     private _surplus: number;
@@ -32,7 +32,7 @@ export class Declaration extends BaseModel {
             new CrudColumn('id', CrudColumn.NUMBER, 0, false),
             new CrudColumn('id_attendee', CrudColumn.NUMBER),
             new CrudColumn('engagement', CrudColumn.STRING, 0, false),
-            new CrudColumn('advance', CrudColumn.NUMBER),
+            new CrudColumn('advance', CrudColumn.BOOL),
             new CrudColumn('piece', CrudColumn.NUMBER),
             new CrudColumn('reference', CrudColumn.STRING, 0, false),
             new CrudColumn('surplus', CrudColumn.NUMBER, 0, false),
@@ -54,6 +54,10 @@ export class Declaration extends BaseModel {
         this.datePropeties = [
             'created_at',
             'updated_at'
+        ];
+
+        this.boolPropeties = [
+            'advance'
         ];
 
         if (obj) {
@@ -100,7 +104,7 @@ export class Declaration extends BaseModel {
         return this._advance;
     }
 
-    public set advance(val: number) {
+    public set advance(val: boolean) {
         if (val !== this._advance) {
             this.sync = false;
             this._advance = val;

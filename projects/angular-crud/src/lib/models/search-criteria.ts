@@ -38,13 +38,13 @@ export class SearchCriteria {
         return str;
     }
 
-    public getFilterValue(name: string, type: string, optionLabel?: string, filters?: Filters): string {
+    public getFilterValue(name: string, operation: string, optionLabel?: string, filters?: Filters): string {
         if (!filters) {
             filters = this.filters;
         }
         const f = filters.members.find(member => {
             if (optionLabel) {
-                return (member.column === optionLabel && filters.relationName === name && member.type === type);
+                return (member.column === optionLabel && filters.relationName === name && member.operation === operation);
             } else {
                 return member.column === name;
             }
@@ -55,7 +55,7 @@ export class SearchCriteria {
         } else {
             let returnStr: string;
             filters.childrens.forEach(child => {
-                const tmp = this.getFilterValue(name, type, optionLabel, child);
+                const tmp = this.getFilterValue(name, operation, optionLabel, child);
 
                 if (tmp) {
                     returnStr = tmp;

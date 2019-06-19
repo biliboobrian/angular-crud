@@ -588,8 +588,15 @@ export class CrudService {
     }
   }
 
-  public clearCache() {
-    this.crudCache = {};
+  public clearCache(tables?: Array<string>) {
+    if (!tables) {
+      this.crudCache = {};
+    } else {
+      tables.forEach(table => {
+        this.crudCache[table] = null;
+        delete(this.crudCache[table]);
+      });
+    }
   }
 
   public getKey(operation: number, field: string) {

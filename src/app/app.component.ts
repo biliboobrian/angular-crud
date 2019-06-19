@@ -30,7 +30,10 @@ export class AppComponent implements OnInit {
       });
 
       const dClone = d.clone();
-      d.advance = 1651651615;
+      //d.advance = 1651651615;
+
+      const dDuplicate = d.duplicateAsNew(false);
+
     });
   }
 }

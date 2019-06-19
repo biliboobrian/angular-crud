@@ -50,7 +50,7 @@ export class DataService {
                   'city': 'iuhiuhiuhiuh',
                   'number': '4',
                   'street': 'iuhiuhiuhih',
-                  'residence': ' ',
+                  'residence': true,
                   'ccpl': 'ihiuhiuhiuhiuhiuhiuh',
                   'created_at': '2019-02-15 15:28:41',
                   'updated_at': '2019-02-15 15:28:41'

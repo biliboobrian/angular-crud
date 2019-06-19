@@ -10,6 +10,7 @@ export class CrudModelsService {
   apiUrl: string;
   cacheTable: Array<string>;
 
+
   constructor(@Inject('config') private config: CrudConfig) {
     this.crudModels = config.crudModels;
     this.apiUrl = config.apiUrl;

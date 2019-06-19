@@ -303,7 +303,7 @@ export class BaseModel {
                         this['_' + property] = moment(obj[property], 'YYYY-MM-DD hh:mm:ss');
                     }
                 } else if (this.boolPropeties.includes(property)) {
-                    if (obj[property] && obj[property] === 1) {
+                    if (obj[property] && (obj[property] === 1 || obj[property] === true)) {
                         this['_' + property] = true;
                     } else {
                         this['_' + property] = false;

@@ -1,13 +1,14 @@
 export class Filter {
     column: string;
     value: string;
-    type: string;
+    operation: string;
     field: boolean;
+    type = 'string';
 
-    constructor(column: string = null, value: string = null, type: string = null, field: boolean = false) {
+    constructor(column: string = null, value: string = null, operation: string = null, field: boolean = false) {
         this.column = column;
         this.value = value;
-        this.type = type;
+        this.operation = operation;
         this.field = field;
     }
 }

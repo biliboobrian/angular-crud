@@ -18,7 +18,7 @@ export class Attendee extends BaseModel {
     private _city: string;
     private _number: string;
     private _street: string;
-    private _residence: string;
+    private _residence: boolean;
     private _ccpl: string;
     private _created_at: any;
     private _updated_at: any;
@@ -41,7 +41,7 @@ export class Attendee extends BaseModel {
             new CrudColumn('city', CrudColumn.STRING, 0, false),
             new CrudColumn('number', CrudColumn.STRING, 0, false),
             new CrudColumn('street', CrudColumn.STRING, 0, false),
-            new CrudColumn('residence', CrudColumn.STRING, 0, false),
+            new CrudColumn('residence', CrudColumn.BOOL, 0, false),
             new CrudColumn('ccpl', CrudColumn.STRING, 0, false),
             new CrudColumn('created_at', CrudColumn.DATE, 0, false),
             new CrudColumn('updated_at', CrudColumn.DATE, 0, false)
@@ -199,7 +199,7 @@ export class Attendee extends BaseModel {
         return this._residence;
     }
 
-    public set residence(val: string) {
+    public set residence(val: boolean) {
         if (val !== this._residence) {
             this.sync = false;
             this._residence = val;

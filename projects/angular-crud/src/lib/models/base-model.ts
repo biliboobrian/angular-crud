@@ -100,6 +100,22 @@ export class BaseModel {
         return obj;
     }
 
+    setAsSync() {
+        this.sync = true;
+
+        this.relations.forEach(relation => {
+            if (this['_' + relation]) {
+                if (Array.isArray(this['_' + relation])) {
+                    this['_' + relation].forEach((element: BaseModel) => {
+                        element.setAsSync();
+                    });
+                } else {
+                    this['_' + relation].setAsSync();
+                }
+            }
+        });
+    }
+
     duplicateAsNew(withRelationsAsNew: boolean = false) {
         const obj = new (this.constructor as any)(this.exportData(), this.crudService);
         obj.fetched = false;

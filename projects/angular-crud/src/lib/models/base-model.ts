@@ -331,14 +331,14 @@ export class BaseModel {
         }
     }
 
-    exportData(withRelations?: object): object {
+    exportData(withRelations?: object, withId = true): object {
         const obj: object = {};
         this.exportProperties.forEach(crudColumn => {
             if (this.datePropeties.includes(crudColumn.name)
                 && this.hasOwnProperty('_' + crudColumn.name)
                 && this['_' + crudColumn.name]) {
                 obj[crudColumn.name] = this['_' + crudColumn.name]['valueOf']();
-            } else {
+            } else if (withId || (!withId && this.primaryKey !== crudColumn.name)) {
                 obj[crudColumn.name] = this['_' + crudColumn.name];
 
             }

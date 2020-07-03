@@ -285,7 +285,7 @@ export class CrudService {
     };
 
     if (!this.crudTransaction) {
-      return this.http.post(this.crudModelService.apiUrl + url, obj.exportData(), options)
+      return this.http.post(this.crudModelService.apiUrl + url, obj.exportData(null, false), options)
         .pipe(
           map(data => {
             this.snotifyService.success('Relation ' + obj[obj.primaryKey] + ' ajoutée avec succès.');
@@ -300,7 +300,7 @@ export class CrudService {
           )
         );
     } else {
-      this.addOperation(new CrudOperation('POST', '/' + url, obj.exportData()));
+      this.addOperation(new CrudOperation('POST', '/' + url, obj.exportData(null, false)));
       return null;
     }
   }
@@ -350,7 +350,7 @@ export class CrudService {
     };
 
     if (!this.crudTransaction) {
-      return this.http.post(this.crudModelService.apiUrl + url, obj.exportData(), options)
+      return this.http.post(this.crudModelService.apiUrl + url, obj.exportData(null, false), options)
         .pipe(
           map(data => {
             if (toastMessage) {
@@ -370,7 +370,7 @@ export class CrudService {
           )
         );
     } else {
-      this.addOperation(new CrudOperation('POST', '/' + url, obj.exportData(), tbl));
+      this.addOperation(new CrudOperation('POST', '/' + url, obj.exportData(null, false), tbl));
       return null;
     }
 

@@ -83,7 +83,7 @@ export class CrudService {
             return this.http.get<PaginatedCrudResponse>(this.crudModelService.apiUrl + url)
               .pipe(
                 debounceTime(debounce),
-                map(data => {
+                map((data: any) => {
                   this.crudCache[tbl] = new PaginatedCrudResponse(data, this);
                   return this.crudCache[tbl];
                 }),
@@ -101,7 +101,7 @@ export class CrudService {
           return this.http.get<PaginatedCrudResponse>(this.crudModelService.apiUrl + url)
             .pipe(
               debounceTime(debounce),
-              map(data => new PaginatedCrudResponse(data, this),
+              map((data: any) => new PaginatedCrudResponse(data, this),
                 catchError(
                   (e: HttpErrorResponse) => {
                     this.crudOperations = new Array<CrudOperation>();
@@ -122,7 +122,7 @@ export class CrudService {
           } else {
             return this.http.get<PaginatedCrudResponse>(this.crudModelService.apiUrl + url)
               .pipe(
-                map(data => {
+                map((data: any) => {
                   this.crudCache[tbl] = new PaginatedCrudResponse(data, this);
                   return this.crudCache[tbl];
                 }),
@@ -138,7 +138,7 @@ export class CrudService {
         } else {
           return this.http.get<PaginatedCrudResponse>(this.crudModelService.apiUrl + url)
             .pipe(
-              map(data => new PaginatedCrudResponse(data, this),
+              map((data: any) => new PaginatedCrudResponse(data, this),
                 catchError(
                   (e: HttpErrorResponse) => {
                     this.crudOperations = new Array<CrudOperation>();
@@ -163,7 +163,7 @@ export class CrudService {
     if (!this.crudTransaction) {
       return this.http.get<CrudResponse>(this.crudModelService.apiUrl + url)
         .pipe(
-          map(data => new CrudResponse(data, this),
+          map((data: any) => new CrudResponse(data, this),
             catchError(
               (e: HttpErrorResponse) => {
                 this.crudOperations = new Array<CrudOperation>();
@@ -194,7 +194,7 @@ export class CrudService {
 
           return this.http.get<CrudResponse>(this.crudModelService.apiUrl + url)
             .pipe(
-              map(data => {
+              map((data: any) => {
                 this.crudCache[tbl] = new CrudResponse(data, this);
                 return this.crudCache[tbl];
               }),
@@ -210,7 +210,7 @@ export class CrudService {
       } else {
         return this.http.get<CrudResponse>(this.crudModelService.apiUrl + url)
           .pipe(
-            map(data => {
+            map((data: any) => {
               return new CrudResponse(data, this);
             }),
             catchError(
@@ -257,7 +257,7 @@ export class CrudService {
     if (!this.crudTransaction) {
       return this.http.get<CrudResponse>(this.crudModelService.apiUrl + url)
         .pipe(
-          map(data => new CrudResponse(data, this),
+          map((data: any) => new CrudResponse(data, this),
             catchError(
               (e: HttpErrorResponse) => {
                 this.crudOperations = new Array<CrudOperation>();
@@ -287,7 +287,7 @@ export class CrudService {
     if (!this.crudTransaction) {
       return this.http.post(this.crudModelService.apiUrl + url, obj.exportData(null, false), options)
         .pipe(
-          map(data => {
+          map((data: any) => {
             this.snotifyService.success('Relation ' + obj[obj.primaryKey] + ' ajoutée avec succès.');
             return new CrudResponse(data, this);
           }),
@@ -319,7 +319,7 @@ export class CrudService {
     if (!this.crudTransaction) {
       return this.http.post(this.crudModelService.apiUrl + url, [], options)
         .pipe(
-          map(data => {
+          map((data: any) => {
             this.snotifyService.success('Relation ajoutée avec succès.');
             return new CrudResponse(data, this);
           }),
@@ -352,7 +352,7 @@ export class CrudService {
     if (!this.crudTransaction) {
       return this.http.post(this.crudModelService.apiUrl + url, obj.exportData(null, false), options)
         .pipe(
-          map(data => {
+          map((data: any) => {
             if (toastMessage) {
               this.snotifyService.success(toastMessage);
             } else {
@@ -391,7 +391,7 @@ export class CrudService {
     if (!this.crudTransaction) {
       return this.http.put(this.crudModelService.apiUrl + url, obj.exportData(), options)
         .pipe(
-          map(data => {
+          map((data: any) => {
             if (toastMessage) {
               this.snotifyService.success(toastMessage);
             } else {
@@ -422,7 +422,7 @@ export class CrudService {
     if (!this.crudTransaction) {
       return this.http.delete(this.crudModelService.apiUrl + url)
         .pipe(
-          map(data => {
+          map((data: any) => {
             if (toastMessage) {
               this.snotifyService.success(toastMessage);
             } else {
@@ -460,7 +460,7 @@ export class CrudService {
     if (!this.crudTransaction) {
       return this.http.delete(this.crudModelService.apiUrl + url, options)
         .pipe(
-          map(data => {
+          map((data: any) => {
             this.snotifyService.success('Relations supprimées avec succès.');
             return new CrudResponse(data, this);
           }),
@@ -492,7 +492,7 @@ export class CrudService {
     if (!this.crudTransaction) {
       return this.http.delete(this.crudModelService.apiUrl + url, options)
         .pipe(
-          map(data => {
+          map((data: any) => {
             this.snotifyService.success('Relation ' + obj[obj.primaryKey] + ' supprimée avec succès.');
             return new CrudResponse(data, this);
           }),
@@ -562,7 +562,7 @@ export class CrudService {
 
         return this.http.post(this.crudModelService.apiUrl + 'bulk', JSON.stringify(crudOperations), options)
           .pipe(
-            map(data => this.parseData(data, currentCrudOp, toastMessage)),
+            map((data: any) => this.parseData(data, currentCrudOp, toastMessage)),
             catchError(
               (e: HttpErrorResponse) => {
                 this.crudOperations = new Array<CrudOperation>();

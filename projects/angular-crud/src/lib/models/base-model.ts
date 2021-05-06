@@ -5,7 +5,8 @@ import { map } from 'rxjs/operators';
 import { CrudService } from '../services/crud.service';
 import { PaginatedCrudResponse } from './paginated-crud-response';
 import { CrudColumn } from './crud-column';
-import * as moment_ from 'moment'; const moment = moment_;
+import * as moment_ from 'moment';import { CrudResponse } from './crud-response';
+ const moment = moment_;
 
 export class BaseModel {
 
@@ -40,7 +41,7 @@ export class BaseModel {
             return null;
         } else {
             return this.crudService.getById(id, this.table).pipe(
-                map(crudResponse => {
+                map((crudResponse: CrudResponse) => {
                     this.importData(crudResponse.data);
                     this.fetched = true;
                     return true;
@@ -214,7 +215,7 @@ export class BaseModel {
             } else {
                 if (!this.sync) {
                     return this.crudService.put(this, this.table, toastMessage).pipe(
-                        map(crudResponse => {
+                        map((crudResponse: CrudResponse) => {
                             this.importData(crudResponse.data);
                             return true;
                         })
@@ -248,14 +249,14 @@ export class BaseModel {
                 if (!this.sync) {
                     if (relationPath) {
                         return this.crudService.postRelation(this, relationPath).pipe(
-                            map(crudResponse => {
+                            map((crudResponse: CrudResponse) => {
                                 this.importData(crudResponse.data);
                                 return true;
                             })
                         );
                     } else {
                         return this.crudService.post(this, this.table, toastMessage).pipe(
-                            map(crudResponse => {
+                            map((crudResponse: CrudResponse) => {
                                 this.importData(crudResponse.data);
                                 return true;
                             })
@@ -295,7 +296,7 @@ export class BaseModel {
             return null;
         } else {
             return this.crudService.delete(this, this.table, toastMessage).pipe(
-                map(crudResponse => {
+                map((crudResponse: CrudResponse) => {
                     this.importData(crudResponse.data);
                     return true;
                 })

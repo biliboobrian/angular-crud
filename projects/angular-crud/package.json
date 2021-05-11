@@ -1,17 +1,17 @@
 {
   "name": "@biliboobrian/angular-crud",
   "author": "Pierre Hanauer <pierre.hanauer@its4u.lu>",
-  "version": "11.0.0",
+  "version": "11.0.1",
   "description": "Angular Crud services and models for Angular using PHP",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/biliboobrian/angular-crud.git"
   },
   "peerDependencies": {
-    "@angular/common": "*",
-    "@angular/core": "*",
-    "ng-snotify": "*",
-    "moment": "*",
-    "moment-es6": "*"
+    "@angular/common": ">=11.0.0",
+    "@angular/core": ">=11.0.0",
+    "ng-snotify": ">=9.0.0",
+    "moment": ">=2.29.1",
+    "moment-es6": ">=1.0.0"
   }
 }
